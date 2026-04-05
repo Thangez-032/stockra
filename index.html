@@ -1,0 +1,1526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Stockra</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500&family=Jost:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #fafaf8;
+    --white: #ffffff;
+    --surface: #f4f3f0;
+    --border: #e8e6e1;
+    --border-dark: #d0cdc6;
+    --text: #1a1916;
+    --sub: #6b6860;
+    --muted: #9e9b94;
+    --accent: #2d5be3;
+    --accent-light: #eef1fc;
+    --danger: #d94f3d;
+    --danger-light: #fdf0ee;
+    --success: #2a7a4b;
+    --radius: 10px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Jost', sans-serif;
+    font-weight: 400;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 48px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+
+  .logo-name span { color: var(--accent); }
+
+  .logo-divider {
+    width: 1px;
+    height: 18px;
+    background: var(--border-dark);
+  }
+
+  .logo-tag {
+    font-family: 'Jost', sans-serif;
+    font-size: 11.5px;
+    font-weight: 400;
+    color: var(--muted);
+    letter-spacing: 0.1px;
+  }
+
+  .nav-right { display: flex; align-items: center; gap: 20px; }
+
+  .nav-stat { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .nav-stat b { color: var(--text); font-weight: 500; }
+
+  .btn {
+    padding: 8px 18px;
+    border-radius: 7px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.18s ease;
+  }
+
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border-dark);
+    color: var(--sub);
+  }
+  .btn-outline:hover { border-color: var(--text); color: var(--text); }
+
+  .btn-danger-sm {
+    background: var(--danger-light);
+    color: var(--danger);
+    border: 1px solid #f0c8c3;
+    padding: 7px 14px;
+    font-size: 12px;
+  }
+  .btn-danger-sm:hover { background: #fae4e1; }
+
+  .btn-link {
+    background: var(--text);
+    color: white;
+    padding: 7px 16px;
+    font-size: 13px;
+  }
+  .btn-link:hover { background: #2d2c29; }
+
+  .layout {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    min-height: calc(100vh - 60px);
+  }
+
+  .sidebar {
+    background: var(--white);
+    border-right: 1px solid var(--border);
+    padding: 32px 28px;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+
+  .sidebar::-webkit-scrollbar { width: 3px; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 22px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .form-group { margin-bottom: 15px; }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--sub);
+    margin-bottom: 6px;
+  }
+
+  input, textarea, select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 10px 13px;
+    color: var(--text);
+    font-family: 'Jost', sans-serif;
+    font-size: 13.5px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    -webkit-appearance: none;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(45,91,227,0.07);
+    background: var(--white);
+  }
+
+  input::placeholder, textarea::placeholder { color: var(--muted); font-weight: 300; }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%239e9b94' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-color: var(--bg);
+    padding-right: 32px;
+    cursor: pointer;
+  }
+  select:focus { background-color: var(--white); }
+  select option { background: white; }
+
+  textarea { resize: vertical; min-height: 78px; line-height: 1.55; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  input.err, select.err { border-color: var(--danger); box-shadow: 0 0 0 3px rgba(217,79,61,0.07); }
+
+  /* PHOTO SECTIONS */
+  .photo-sections { display: flex; flex-direction: column; gap: 14px; }
+
+  .photo-section-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .photo-section-label .ps-badge {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 100px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .ps-badge.landscape { background: #e8f0fe; color: var(--accent); }
+  .ps-badge.portrait  { background: #fef3e8; color: #c47700; }
+
+  .ps-title {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--sub);
+  }
+
+  .ps-dim {
+    font-size: 10px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-left: auto;
+  }
+
+  .upload-zone {
+    border: 1.5px dashed var(--border-dark);
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.18s;
+    position: relative;
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .upload-zone:hover, .upload-zone.dragover { border-color: var(--accent); background: var(--accent-light); }
+  .upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 2; }
+  .upload-zone p { font-size: 11.5px; color: var(--sub); line-height: 1.55; }
+  .upload-zone span { color: var(--accent); font-weight: 500; }
+  .upload-arrow { font-size: 16px; color: var(--muted); margin-bottom: 4px; }
+
+  /* Landscape: wide short */
+  .upload-zone.landscape-zone { padding: 16px 14px; }
+  .upload-zone.landscape-zone .zone-inner { display: flex; align-items: center; gap: 14px; text-align: left; }
+  .upload-zone.landscape-zone .zone-thumb {
+    width: 72px; height: 44px; flex-shrink: 0;
+    background: var(--border);
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    color: var(--muted);
+    border: 1px solid var(--border-dark);
+  }
+
+  /* Portrait: tall narrow */
+  .upload-zone.portrait-zone { padding: 16px 14px; }
+  .upload-zone.portrait-zone .zone-inner { display: flex; align-items: center; gap: 14px; text-align: left; }
+  .upload-zone.portrait-zone .zone-thumb {
+    width: 40px; height: 56px; flex-shrink: 0;
+    background: var(--border);
+    border-radius: 5px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    color: var(--muted);
+    border: 1px solid var(--border-dark);
+  }
+
+  /* Previews */
+  .preview-wrap { display: none; margin-top: 8px; position: relative; }
+  .preview-wrap .remove-img {
+    position: absolute;
+    top: 6px; right: 6px;
+    background: rgba(255,255,255,0.92);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 10px;
+    color: var(--danger);
+    cursor: pointer;
+    font-weight: 600;
+    padding: 3px 8px;
+    transition: background 0.15s;
+    z-index: 1;
+  }
+  .preview-wrap .remove-img:hover { background: var(--danger-light); }
+
+  .preview-landscape img {
+    width: 100%; height: 110px;
+    object-fit: cover;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    display: block;
+  }
+
+  .preview-portrait img {
+    width: 80px; height: 110px;
+    object-fit: cover;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    display: block;
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 22px 0; }
+
+  .submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--text);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s;
+    letter-spacing: 0.2px;
+  }
+  .submit-btn:hover { background: #2d2c29; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.14); }
+
+  /* MAIN */
+  .main-panel { padding: 32px 36px; }
+
+  .panel-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .panel-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: -0.4px;
+  }
+  .panel-title span { color: var(--muted); font-size: 17px; }
+
+  .value-tag {
+    font-size: 11.5px;
+    font-family: 'DM Mono', monospace;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 5px 12px;
+    border-radius: 100px;
+    margin-top: 4px;
+  }
+
+  /* STATS */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 26px;
+  }
+
+  .stat-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 7px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--text);
+    font-weight: 400;
+  }
+
+  /* CONTROLS */
+  .controls { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+
+  .search-wrap { position: relative; flex: 1; min-width: 180px; }
+  .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+  .search-wrap input { padding-left: 36px; }
+
+  .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px; }
+
+  .pill {
+    padding: 7px 14px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--white);
+    color: var(--sub);
+    transition: all 0.15s;
+    font-family: 'Jost', sans-serif;
+    white-space: nowrap;
+  }
+  .pill:hover { border-color: var(--border-dark); color: var(--text); }
+  .pill.active { background: var(--text); color: white; border-color: var(--text); }
+
+  /* GRID */
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr)); gap: 14px; }
+
+  .pcard {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+    animation: fadeUp 0.3s ease both;
+  }
+  .pcard:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); border-color: var(--border-dark); }
+
+  .pcard-img { width: 100%; height: 165px; object-fit: cover; display: block; }
+  .pcard-ph { width: 100%; height: 165px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 32px; color: var(--muted); }
+
+  .pcard-body { padding: 13px 14px; }
+
+  .pcard-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
+
+  .pcat {
+    font-size: 9.5px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .badge {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 100px;
+    font-family: 'DM Mono', monospace;
+  }
+  .b-new { background: #e8f4ec; color: var(--success); }
+  .b-sale { background: var(--danger-light); color: var(--danger); }
+  .b-hot { background: #fff4e5; color: #c47700; }
+  .b-sold { background: var(--surface); color: var(--muted); border: 1px solid var(--border); }
+
+  .pname {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+
+  .pdesc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 11px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    min-height: 36px;
+  }
+
+  .pcard-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .pprice {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    color: var(--text);
+  }
+
+  .porig {
+    font-family: 'Jost', sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: line-through;
+    margin-left: 4px;
+    font-weight: 400;
+  }
+
+  .pdel {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 3px 5px;
+    border-radius: 4px;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+  .pdel:hover { color: var(--danger); background: var(--danger-light); }
+
+  /* EMPTY */
+  .empty {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 72px 20px;
+  }
+
+  .empty-box {
+    width: 52px; height: 52px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin: 0 auto 14px;
+  }
+
+  .empty h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 19px;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 5px;
+  }
+
+  .empty p { font-size: 13px; color: var(--muted); }
+
+  /* MODAL */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(26,25,22,0.45);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    backdrop-filter: blur(3px);
+  }
+  .overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--white);
+    border-radius: 14px;
+    max-width: 490px;
+    width: 100%;
+    max-height: 88vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.12);
+    transform: translateY(12px) scale(0.99);
+    transition: transform 0.22s ease;
+  }
+  .overlay.open .modal { transform: translateY(0) scale(1); }
+  .modal::-webkit-scrollbar { width: 3px; }
+  .modal::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .modal-img { width: 100%; height: 230px; object-fit: cover; border-radius: 14px 14px 0 0; display: block; }
+  .modal-ph { width: 100%; height: 190px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 48px; border-radius: 14px 14px 0 0; }
+
+  .modal-body { padding: 22px 26px 26px; }
+
+  .modal-row1 { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px; }
+
+  .m-cat { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  .m-close {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    width: 28px; height: 28px;
+    cursor: pointer;
+    font-size: 14px;
+    color: var(--sub);
+    transition: background 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .m-close:hover { background: var(--border); }
+
+  .m-name { font-family: 'Playfair Display', serif; font-size: 21px; font-weight: 400; margin: 6px 0 4px; line-height: 1.2; }
+
+  .m-price { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--text); margin: 12px 0; }
+  .m-price .orig { font-family: 'Jost', sans-serif; font-size: 13px; color: var(--muted); text-decoration: line-through; font-weight: 400; margin-left: 8px; }
+
+  .m-chips { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+
+  .chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 11px;
+    font-size: 11.5px;
+    color: var(--sub);
+    font-family: 'DM Mono', monospace;
+  }
+  .chip b { color: var(--text); font-weight: 500; }
+
+  .m-divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+  .m-desc { font-size: 13px; color: var(--sub); line-height: 1.7; }
+
+  .m-actions { display: flex; gap: 9px; margin-top: 18px; flex-wrap: wrap; }
+
+  /* LINK BOX */
+  .link-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .link-box-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    white-space: nowrap;
+  }
+
+  .link-box-url {
+    flex: 1;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--sub);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .copy-btn {
+    background: var(--white);
+    border: 1px solid var(--border-dark);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--sub);
+    cursor: pointer;
+    font-family: 'Jost', sans-serif;
+    transition: all 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .copy-btn:hover { background: var(--accent); color: white; border-color: var(--accent); }
+  .copy-btn.copied { background: var(--success); color: white; border-color: var(--success); }
+
+  /* SHARE CARD in product grid */
+  .pcard-link-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--sub);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Jost', sans-serif;
+    margin-top: 8px;
+    width: 100%;
+    justify-content: center;
+  }
+  .pcard-link-btn:hover { background: var(--accent-light); color: var(--accent); border-color: var(--accent); }
+
+  /* PRODUCT PAGE OVERLAY */
+  .product-page-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 500;
+    display: none;
+    overflow-y: auto;
+  }
+  .product-page-overlay.open { display: block; }
+
+  .pp-nav {
+    background: var(--white);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .pp-back {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--sub);
+    transition: color 0.15s;
+    padding: 0;
+  }
+  .pp-back:hover { color: var(--text); }
+
+  .pp-logo { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--text); }
+  .pp-logo span { color: var(--accent); }
+
+  .pp-body {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  @media (max-width: 700px) {
+    .pp-body { grid-template-columns: 1fr; gap: 28px; }
+    .pp-nav { padding: 0 20px; }
+  }
+
+  .pp-img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    display: block;
+  }
+
+  .pp-img-ph {
+    width: 100%;
+    aspect-ratio: 1;
+    background: var(--surface);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+    color: var(--muted);
+  }
+
+  .pp-cat {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 10px;
+  }
+
+  .pp-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+
+  .pp-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: var(--text);
+    margin: 16px 0;
+  }
+
+  .pp-price .orig {
+    font-family: 'Jost', sans-serif;
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: line-through;
+    font-weight: 400;
+    margin-left: 10px;
+  }
+
+  .pp-desc {
+    font-size: 14px;
+    color: var(--sub);
+    line-height: 1.75;
+    margin: 16px 0;
+    padding: 16px 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pp-meta { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+
+  .pp-chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+    color: var(--sub);
+    font-family: 'DM Mono', monospace;
+  }
+  .pp-chip b { color: var(--text); font-weight: 500; }
+
+  .pp-share-row {
+    margin-top: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+  }
+
+  .pp-share-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    margin-bottom: 8px;
+  }
+
+  .pp-share-url {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--sub);
+    word-break: break-all;
+    margin-bottom: 10px;
+    line-height: 1.5;
+  }
+
+  .pp-copy-full {
+    width: 100%;
+    padding: 9px;
+    background: var(--text);
+    color: white;
+    border: none;
+    border-radius: 7px;
+    font-family: 'Jost', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .pp-copy-full:hover { background: #2d2c29; }
+  .pp-copy-full.copied { background: var(--success); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--text);
+    color: white;
+    padding: 10px 22px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 500;
+    z-index: 400;
+    opacity: 0;
+    transition: all 0.25s ease;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.err { background: var(--danger); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 860px) {
+    nav { padding: 0 20px; }
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { position: static; height: auto; }
+    .main-panel { padding: 24px 20px; }
+    .stats-row { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">
+    <div class="logo-name">Stock<span>ra</span></div>
+    <div class="logo-divider"></div>
+    <div class="logo-tag">Your stock, your store.</div>
+  </div>
+  <div class="nav-right">
+    <span class="nav-stat" id="navStat"><b>0</b> products</span>
+    <button class="btn btn-outline" onclick="clearAll()">Clear all</button>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- FORM SIDEBAR -->
+  <aside class="sidebar">
+    <div class="section-label">Stockra — New Listing</div>
+
+    <div class="form-group">
+      <label>Product name *</label>
+      <input id="fName" type="text" placeholder="e.g. Wireless Earbuds Pro"/>
+    </div>
+
+    <div class="form-group">
+      <label>Category</label>
+      <select id="fCat">
+        <option value="">Select category</option>
+        <option>Electronics</option>
+        <option>Fashion & Apparel</option>
+        <option>Beauty & Health</option>
+        <option>Home & Garden</option>
+        <option>Sports & Outdoors</option>
+        <option>Toys & Kids</option>
+        <option>Pet Supplies</option>
+        <option>Automotive</option>
+        <option>Office & Stationery</option>
+        <option>Food & Beverage</option>
+        <option>Other</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <textarea id="fDesc" placeholder="Key features, benefits, what makes it great..."></textarea>
+    </div>
+
+    <div class="two-col">
+      <div class="form-group">
+        <label>Price (KES) *</label>
+        <input id="fPrice" type="number" placeholder="2500" min="0"/>
+      </div>
+      <div class="form-group">
+        <label>Original (KES)</label>
+        <input id="fOrig" type="number" placeholder="4000" min="0"/>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="form-group">
+        <label>Stock qty</label>
+        <input id="fStock" type="number" placeholder="50" min="0"/>
+      </div>
+      <div class="form-group">
+        <label>Label</label>
+        <select id="fBadge">
+          <option value="">None</option>
+          <option value="new">New</option>
+          <option value="hot">Hot</option>
+          <option value="sale">Sale</option>
+          <option value="sold">Sold Out</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Stock Photos</label>
+      <div class="photo-sections">
+
+        <!-- LANDSCAPE -->
+        <div>
+          <div class="photo-section-label">
+            <span class="ps-badge landscape">Landscape</span>
+            <span class="ps-title">Wide / Banner</span>
+            <span class="ps-dim">16:9 · 1280×720</span>
+          </div>
+          <div class="upload-zone landscape-zone" id="lsZone">
+            <input type="file" id="lsInput" accept="image/*"/>
+            <div class="zone-inner">
+              <div class="zone-thumb">⬛</div>
+              <div>
+                <p><span>Upload landscape</span><br/>Best for banners &amp; covers</p>
+              </div>
+            </div>
+          </div>
+          <div class="preview-wrap preview-landscape" id="lsPreviewWrap">
+            <img id="lsPreviewImg" src="" alt="Landscape preview"/>
+            <span class="remove-img" onclick="removePhoto('ls')">✕ Remove</span>
+          </div>
+        </div>
+
+        <!-- PORTRAIT -->
+        <div>
+          <div class="photo-section-label">
+            <span class="ps-badge portrait">Portrait</span>
+            <span class="ps-title">Tall / Product Shot</span>
+            <span class="ps-dim">3:4 · 900×1200</span>
+          </div>
+          <div class="upload-zone portrait-zone" id="ptZone">
+            <input type="file" id="ptInput" accept="image/*"/>
+            <div class="zone-inner">
+              <div class="zone-thumb">▮</div>
+              <div>
+                <p><span>Upload portrait</span><br/>Best for product close-ups</p>
+              </div>
+            </div>
+          </div>
+          <div class="preview-wrap preview-portrait" id="ptPreviewWrap">
+            <img id="ptPreviewImg" src="" alt="Portrait preview"/>
+            <span class="remove-img" onclick="removePhoto('pt')">✕ Remove</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Supplier link (optional)</label>
+      <input id="fLink" type="url" placeholder="https://..."/>
+    </div>
+
+    <div class="divider"></div>
+
+    <button class="submit-btn" onclick="addProduct()">Post Product</button>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-panel">
+
+    <div class="panel-top">
+      <div>
+        <div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:5px;">Stockra — Product Dashboard</div>
+        <div class="panel-title" id="panelTitle">All Products <span>(0)</span></div>
+      </div>
+      <span class="value-tag" id="valueTag">KES 0 inventory value</span>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Products</div>
+        <div class="stat-value" id="sTotal">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Average Price</div>
+        <div class="stat-value" id="sAvg">—</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Categories</div>
+        <div class="stat-value" id="sCats">—</div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="search-wrap">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <circle cx="6" cy="6" r="4.5" stroke="#9e9b94" stroke-width="1.4"/>
+          <path d="M9.5 9.5L12.5 12.5" stroke="#9e9b94" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <input type="text" id="searchInput" placeholder="Search products..." oninput="render()"/>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      <button class="pill active" onclick="setFilter('all',this)">All</button>
+      <button class="pill" onclick="setFilter('Electronics',this)">Electronics</button>
+      <button class="pill" onclick="setFilter('Fashion & Apparel',this)">Fashion</button>
+      <button class="pill" onclick="setFilter('Beauty & Health',this)">Beauty</button>
+      <button class="pill" onclick="setFilter('Home & Garden',this)">Home</button>
+      <button class="pill" onclick="setFilter('Sports & Outdoors',this)">Sports</button>
+      <button class="pill" onclick="setFilter('Pet Supplies',this)">Pets</button>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+  </main>
+</div>
+
+<!-- MODAL -->
+<div class="overlay" id="overlay" onclick="overlayClick(event)">
+  <div class="modal" id="modal">
+    <div id="mImg"></div>
+    <div class="modal-body">
+      <div class="modal-row1">
+        <span class="m-cat" id="mCat"></span>
+        <button class="m-close" onclick="closeModal()">✕</button>
+      </div>
+      <div class="m-name" id="mName"></div>
+      <div id="mBadge" style="margin:5px 0;"></div>
+      <div class="m-price" id="mPrice"></div>
+      <div class="m-chips" id="mChips"></div>
+      <div class="m-divider"></div>
+      <div class="m-desc" id="mDesc"></div>
+      <div class="m-actions">
+        <button class="btn btn-link" id="mLink" style="display:none;" onclick="openLink()">Visit supplier ↗</button>
+        <button class="btn btn-danger-sm" id="mDel">Delete product</button>
+      </div>
+      <div class="link-box" id="mLinkBox" style="display:none;">
+        <span class="link-box-label">Link</span>
+        <span class="link-box-url" id="mLinkUrl"></span>
+        <button class="copy-btn" id="mCopyBtn" onclick="copyProductLink()">Copy</button>
+      </div>
+      <button class="btn" id="mGenLink" style="width:100%;margin-top:10px;background:var(--accent-light);color:var(--accent);border:1px solid #c5d3f8;font-size:13px;" onclick="generateLink()">
+        🔗 Generate product link
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- PRODUCT PAGE (shareable view) -->
+<div class="product-page-overlay" id="productPage">
+  <div class="pp-nav">
+    <button class="pp-back" onclick="closeProductPage()">
+      ← Back to dashboard
+    </button>
+    <div class="pp-logo">Stock<span>ra</span></div>
+    <div style="width:120px;"></div>
+  </div>
+  <div class="pp-body" id="ppBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let products = JSON.parse(localStorage.getItem('ds2_products') || '[]');
+  let filter = 'all';
+  let lsData = null; // landscape image
+  let ptData = null; // portrait image
+
+  // --- LANDSCAPE UPLOAD ---
+  const lsInput = document.getElementById('lsInput');
+  const lsZone  = document.getElementById('lsZone');
+  const lsWrap  = document.getElementById('lsPreviewWrap');
+  const lsImg   = document.getElementById('lsPreviewImg');
+
+  lsInput.addEventListener('change', e => { if(e.target.files[0]) loadPhoto(e.target.files[0], 'ls'); });
+  lsZone.addEventListener('dragover', e => { e.preventDefault(); lsZone.classList.add('dragover'); });
+  lsZone.addEventListener('dragleave', () => lsZone.classList.remove('dragover'));
+  lsZone.addEventListener('drop', e => {
+    e.preventDefault(); lsZone.classList.remove('dragover');
+    const f = e.dataTransfer.files[0];
+    if(f && f.type.startsWith('image/')) loadPhoto(f, 'ls');
+  });
+
+  // --- PORTRAIT UPLOAD ---
+  const ptInput = document.getElementById('ptInput');
+  const ptZone  = document.getElementById('ptZone');
+  const ptWrap  = document.getElementById('ptPreviewWrap');
+  const ptImg   = document.getElementById('ptPreviewImg');
+
+  ptInput.addEventListener('change', e => { if(e.target.files[0]) loadPhoto(e.target.files[0], 'pt'); });
+  ptZone.addEventListener('dragover', e => { e.preventDefault(); ptZone.classList.add('dragover'); });
+  ptZone.addEventListener('dragleave', () => ptZone.classList.remove('dragover'));
+  ptZone.addEventListener('drop', e => {
+    e.preventDefault(); ptZone.classList.remove('dragover');
+    const f = e.dataTransfer.files[0];
+    if(f && f.type.startsWith('image/')) loadPhoto(f, 'pt');
+  });
+
+  function loadPhoto(file, type) {
+    const r = new FileReader();
+    r.onload = e => {
+      if(type === 'ls') {
+        lsData = e.target.result;
+        lsImg.src = lsData;
+        lsWrap.style.display = 'block';
+        lsZone.style.display = 'none';
+      } else {
+        ptData = e.target.result;
+        ptImg.src = ptData;
+        ptWrap.style.display = 'block';
+        ptZone.style.display = 'none';
+      }
+    };
+    r.readAsDataURL(file);
+  }
+
+  function removePhoto(type) {
+    if(type === 'ls') {
+      lsData = null; lsImg.src = '';
+      lsWrap.style.display = 'none'; lsZone.style.display = 'block'; lsInput.value = '';
+    } else {
+      ptData = null; ptImg.src = '';
+      ptWrap.style.display = 'none'; ptZone.style.display = 'block'; ptInput.value = '';
+    }
+  }
+
+  function emoji(cat) {
+    const m = {'Electronics':'⚡','Fashion & Apparel':'◈','Beauty & Health':'◉','Home & Garden':'◐','Sports & Outdoors':'◎','Toys & Kids':'◇','Pet Supplies':'◆','Automotive':'◀','Office & Stationery':'▣','Food & Beverage':'◑','Other':'◻'};
+    return m[cat] || '◻';
+  }
+
+  function badge(b) {
+    if(!b) return '';
+    const m = {new:'<span class="badge b-new">New</span>',sale:'<span class="badge b-sale">Sale</span>',hot:'<span class="badge b-hot">Hot</span>',sold:'<span class="badge b-sold">Sold Out</span>'};
+    return m[b] || '';
+  }
+
+  function addProduct() {
+    let ok = true;
+    ['fName','fPrice'].forEach(id => {
+      const el = document.getElementById(id);
+      if(!el.value.trim()) { el.classList.add('err'); ok = false; }
+      else el.classList.remove('err');
+    });
+    if(!ok) { toast('Please fill in required fields', true); return; }
+
+    const p = {
+      id: Date.now(),
+      name: document.getElementById('fName').value.trim(),
+      cat: document.getElementById('fCat').value || 'Other',
+      desc: document.getElementById('fDesc').value.trim(),
+      price: parseFloat(document.getElementById('fPrice').value),
+      orig: parseFloat(document.getElementById('fOrig').value) || null,
+      stock: parseInt(document.getElementById('fStock').value) || null,
+      badge: document.getElementById('fBadge').value,
+      imgLandscape: lsData,
+      imgPortrait: ptData,
+      img: lsData || ptData, // fallback for card display
+      link: document.getElementById('fLink').value.trim(),
+      date: new Date().toLocaleDateString('en-KE',{day:'numeric',month:'short',year:'numeric'})
+    };
+
+    products.unshift(p);
+    save(); render(); resetForm();
+    toast('Product posted');
+  }
+
+  function resetForm() {
+    ['fName','fDesc','fPrice','fOrig','fStock','fLink'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('fCat').selectedIndex = 0;
+    document.getElementById('fBadge').selectedIndex = 0;
+    removePhoto('ls');
+    removePhoto('pt');
+  }
+
+  function del(id) {
+    products = products.filter(p=>p.id!==id);
+    save(); render(); closeModal();
+    toast('Product removed');
+  }
+
+  function clearAll() {
+    if(!products.length) return;
+    if(confirm('Remove all products?')) { products=[]; save(); render(); toast('Cleared'); }
+  }
+
+  function save() { localStorage.setItem('ds2_products', JSON.stringify(products)); }
+
+  function setFilter(f, btn) {
+    filter = f;
+    document.querySelectorAll('.pill').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  }
+
+  function render() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    const filtered = products.filter(p => {
+      const mf = filter==='all' || p.cat===filter;
+      const mq = p.name.toLowerCase().includes(q)||(p.desc||'').toLowerCase().includes(q)||(p.cat||'').toLowerCase().includes(q);
+      return mf && mq;
+    });
+
+    document.getElementById('sTotal').textContent = products.length;
+    const avg = products.length ? Math.round(products.reduce((s,p)=>s+p.price,0)/products.length) : 0;
+    document.getElementById('sAvg').textContent = products.length ? 'KES '+avg.toLocaleString() : '—';
+    const cats = [...new Set(products.map(p=>p.cat))].length;
+    document.getElementById('sCats').textContent = cats || '—';
+    document.getElementById('navStat').innerHTML = `<b>${products.length}</b> product${products.length!==1?'s':''}`;
+    document.getElementById('panelTitle').innerHTML = `All Products <span>(${filtered.length})</span>`;
+    const tv = products.reduce((s,p)=>s+p.price*(p.stock||1),0);
+    document.getElementById('valueTag').textContent = 'KES '+tv.toLocaleString()+' inventory value';
+
+    const grid = document.getElementById('grid');
+    if(!filtered.length) {
+      grid.innerHTML = `<div class="empty"><div class="empty-box">${products.length?'🔍':'📦'}</div><h3>${products.length?'No results found':'No products yet'}</h3><p>${products.length?'Try different search or filters.':'Add your first listing to your Stockra store.'}</p></div>`;
+      return;
+    }
+
+    grid.innerHTML = filtered.map((p,i) => `
+      <div class="pcard" style="animation-delay:${i*0.035}s" onclick="openModal(${p.id})">
+        ${p.img?`<img class="pcard-img" src="${p.img}" alt="${p.name}" loading="lazy"/>`:`<div class="pcard-ph">${emoji(p.cat)}</div>`}
+        <div class="pcard-body">
+          <div class="pcard-top">
+            <span class="pcat">${p.cat||'Other'}</span>
+            ${badge(p.badge)}
+          </div>
+          <div class="pname" title="${p.name}">${p.name}</div>
+          <div class="pdesc">${p.desc||`<span style="color:var(--border-dark)">No description</span>`}</div>
+          <div class="pcard-foot">
+            <span class="pprice">KES ${p.price.toLocaleString()}${p.orig?`<span class="porig">KES ${p.orig.toLocaleString()}</span>`:''}</span>
+            <button class="pdel" onclick="event.stopPropagation();del(${p.id})" title="Remove">✕</button>
+          </div>
+          <button class="pcard-link-btn" onclick="event.stopPropagation();quickCopyLink(${p.id},this)">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 7.5l3-3M7 2h3v3M5 2H3a1 1 0 00-1 1v6a1 1 0 001 1h6a1 1 0 001-1V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Copy link
+          </button>
+        </div>
+      </div>`).join('');
+  }
+
+  function openModal(id) {
+    const p = products.find(x=>x.id===id); if(!p) return;
+    currentModalId = id;
+    document.getElementById('mLinkBox').style.display = 'none';
+    document.getElementById('mGenLink').style.display = 'block';
+
+    // Build photo display — landscape on top, portrait below if both exist
+    let imgHTML = '';
+    if(p.imgLandscape && p.imgPortrait) {
+      imgHTML = `
+        <img class="modal-img" src="${p.imgLandscape}" alt="Landscape"/>
+        <div style="display:flex;gap:10px;padding:10px 14px 0;">
+          <div style="flex:1;">
+            <div style="font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:5px;">Landscape</div>
+            <img src="${p.imgLandscape}" style="width:100%;height:70px;object-fit:cover;border-radius:6px;border:1px solid var(--border);display:block;"/>
+          </div>
+          <div style="width:70px;">
+            <div style="font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:5px;">Portrait</div>
+            <img src="${p.imgPortrait}" style="width:70px;height:70px;object-fit:cover;border-radius:6px;border:1px solid var(--border);display:block;"/>
+          </div>
+        </div>`;
+    } else if(p.imgLandscape) {
+      imgHTML = `<img class="modal-img" src="${p.imgLandscape}" alt="Landscape"/>
+        <div style="padding:6px 14px 0;font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace;">Landscape photo</div>`;
+    } else if(p.imgPortrait) {
+      imgHTML = `<div style="padding:14px 14px 0;display:flex;gap:12px;align-items:flex-start;">
+        <img src="${p.imgPortrait}" style="width:110px;height:150px;object-fit:cover;border-radius:8px;border:1px solid var(--border);display:block;"/>
+        <div style="font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-family:'DM Mono',monospace;margin-top:4px;">Portrait photo</div>
+      </div>`;
+    } else {
+      imgHTML = `<div class="modal-ph">${emoji(p.cat)}</div>`;
+    }
+
+    document.getElementById('mImg').innerHTML = imgHTML;
+    document.getElementById('mCat').textContent = (p.cat||'Other').toUpperCase();
+    document.getElementById('mName').textContent = p.name;
+    document.getElementById('mBadge').innerHTML = badge(p.badge);
+    document.getElementById('mPrice').innerHTML = `KES ${p.price.toLocaleString()}${p.orig?`<span class="orig">KES ${p.orig.toLocaleString()}</span>`:''}`;
+    const chips = [];
+    if(p.stock!=null&&!isNaN(p.stock)) chips.push(`<div class="chip">Stock: <b>${p.stock}</b></div>`);
+    if(p.orig){const d=Math.round((1-p.price/p.orig)*100);chips.push(`<div class="chip" style="color:var(--danger)"><b>${d}% off</b></div>`);}
+    if(p.date) chips.push(`<div class="chip">Added: <b>${p.date}</b></div>`);
+    if(p.imgLandscape) chips.push(`<div class="chip" style="color:var(--accent)">📸 Landscape</div>`);
+    if(p.imgPortrait) chips.push(`<div class="chip" style="color:#c47700">📸 Portrait</div>`);
+    document.getElementById('mChips').innerHTML = chips.join('');
+    document.getElementById('mDesc').innerHTML = p.desc?`<p>${p.desc}</p>`:`<p style="color:var(--muted);font-style:italic">No description provided.</p>`;
+    const ml = document.getElementById('mLink');
+    if(p.link){ml.style.display='inline-block';ml.dataset.url=p.link;}else ml.style.display='none';
+    document.getElementById('mDel').onclick = ()=>del(id);
+    // Add view page button
+    const existingViewBtn = document.getElementById('mViewPageBtn');
+    if(existingViewBtn) existingViewBtn.remove();
+    const viewBtn = document.createElement('button');
+    viewBtn.id = 'mViewPageBtn';
+    viewBtn.className = 'btn btn-link';
+    viewBtn.textContent = 'View product page ↗';
+    viewBtn.onclick = () => { closeModal(); openProductPage(id); };
+    document.querySelector('.m-actions').prepend(viewBtn);
+    document.getElementById('overlay').classList.add('open');
+  }
+
+  function openLink(){window.open(document.getElementById('mLink').dataset.url,'_blank');}
+  function closeModal(){
+    document.getElementById('overlay').classList.remove('open');
+    document.getElementById('mLinkBox').style.display = 'none';
+    document.getElementById('mGenLink').style.display = 'block';
+  }
+  function overlayClick(e){if(e.target===document.getElementById('overlay'))closeModal();}
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){ closeModal(); closeProductPage(); }});
+
+  // ---- LINK GENERATION ----
+  let currentModalId = null;
+
+  function generateLink() {
+    if(!currentModalId) return;
+    const base = window.location.href.split('#')[0];
+    const link = base + '#product-' + currentModalId;
+    document.getElementById('mLinkUrl').textContent = link;
+    document.getElementById('mLinkBox').style.display = 'flex';
+    document.getElementById('mGenLink').style.display = 'none';
+    toast('Product link generated!');
+  }
+
+  function copyProductLink() {
+    const url = document.getElementById('mLinkUrl').textContent;
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.getElementById('mCopyBtn');
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+      toast('Link copied to clipboard');
+    });
+  }
+
+  // ---- PRODUCT PAGE ----
+  function openProductPage(id) {
+    const p = products.find(x => x.id === id);
+    if(!p) return;
+
+    const base = window.location.href.split('#')[0];
+    const link = base + '#product-' + id;
+
+    const discount = p.orig ? Math.round((1 - p.price / p.orig) * 100) : null;
+
+    const imgHTML = p.img
+      ? `<img class="pp-img" src="${p.img}" alt="${p.name}"/>`
+      : `<div class="pp-img-ph">${emoji(p.cat)}</div>`;
+
+    const chips = [];
+    if(p.stock != null && !isNaN(p.stock)) chips.push(`<div class="pp-chip">Stock: <b>${p.stock} units</b></div>`);
+    if(discount) chips.push(`<div class="pp-chip" style="color:var(--danger)"><b>${discount}% off</b></div>`);
+    if(p.date) chips.push(`<div class="pp-chip">Listed: <b>${p.date}</b></div>`);
+
+    document.getElementById('ppBody').innerHTML = `
+      <div>${imgHTML}</div>
+      <div>
+        <div class="pp-cat">${(p.cat || 'Other').toUpperCase()}</div>
+        ${badge(p.badge) ? `<div style="margin-bottom:8px;">${badge(p.badge)}</div>` : ''}
+        <div class="pp-name">${p.name}</div>
+        <div class="pp-price">
+          KES ${p.price.toLocaleString()}
+          ${p.orig ? `<span class="orig">KES ${p.orig.toLocaleString()}</span>` : ''}
+        </div>
+        ${chips.length ? `<div class="pp-meta">${chips.join('')}</div>` : ''}
+        <div class="pp-desc">${p.desc || '<span style="color:var(--muted);font-style:italic">No description provided.</span>'}</div>
+        ${p.link ? `<a href="${p.link}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 18px;background:var(--text);color:white;border-radius:8px;font-size:13px;font-weight:500;text-decoration:none;margin-bottom:12px;">Visit supplier ↗</a>` : ''}
+        <div class="pp-share-row">
+          <div class="pp-share-label">Share this product</div>
+          <div class="pp-share-url">${link}</div>
+          <button class="pp-copy-full" id="ppCopyBtn" onclick="copyPageLink('${link}')">Copy product link</button>
+        </div>
+      </div>
+    `;
+
+    // Set URL hash without reload
+    history.pushState(null, '', '#product-' + id);
+    document.getElementById('productPage').classList.add('open');
+    document.getElementById('productPage').scrollTop = 0;
+  }
+
+  function copyPageLink(url) {
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.getElementById('ppCopyBtn');
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy product link'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  function closeProductPage() {
+    document.getElementById('productPage').classList.remove('open');
+    history.pushState(null, '', window.location.pathname);
+  }
+
+  // Check if URL has a product hash on page load
+  function checkHash() {
+    const hash = window.location.hash;
+    if(hash.startsWith('#product-')) {
+      const id = parseInt(hash.replace('#product-', ''));
+      if(!isNaN(id)) {
+        const p = products.find(x => x.id === id);
+        if(p) openProductPage(id);
+      }
+    }
+  }
+
+  window.addEventListener('popstate', () => {
+    if(!window.location.hash) closeProductPage();
+  });
+
+  function toast(msg, isErr=false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast'+(isErr?' err':'')+' show';
+    setTimeout(()=>t.className='toast'+(isErr?' err':''),2600);
+  }
+
+  function quickCopyLink(id, btn) {
+    const base = window.location.href.split('#')[0];
+    const link = base + '#product-' + id;
+    navigator.clipboard.writeText(link).then(() => {
+      btn.textContent = '✓ Copied!';
+      btn.style.color = 'var(--success)';
+      btn.style.borderColor = 'var(--success)';
+      btn.style.background = '#e8f4ec';
+      setTimeout(() => {
+        btn.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4.5 7.5l3-3M7 2h3v3M5 2H3a1 1 0 00-1 1v6a1 1 0 001 1h6a1 1 0 001-1V7" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg> Copy link`;
+        btn.style.color = '';
+        btn.style.borderColor = '';
+        btn.style.background = '';
+      }, 2000);
+      toast('Product link copied!');
+    });
+  }
+
+  render();
+  checkHash();
+</script>
+</body>
+</html>
